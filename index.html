@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ARC Clones | Especialista em Rolex Clone & Super Clones</title>
+
+    <!-- (Opcional) favicon do Vite ou o seu -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind config (ok com CDN) -->
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                bg: "var(--brand-bg)",
+                gold: "var(--brand-gold)",
+                surface: "var(--brand-surface)",
+                muted: "var(--brand-muted)",
+              },
+            },
+            fontFamily: {
+              brand: ["Orbitron", "sans-serif"],
+              serif: ["Playfair Display", "serif"],
+              sans: ["Inter", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- CSS global -->
+    <style>
+      :root {
+        --brand-bg: #f5f3ee;
+        --brand-gold: #a68a45;
+        --brand-surface: #ffffff;
+        --brand-muted: #e5e5e5;
+        --text-main: #0f0f10;
+        --text-muted: #4b5563;
+      }
+      html.dark {
+        --brand-bg: #0f0f10;
+        --brand-gold: #c6a75e;
+        --brand-surface: #f5f3ee;
+        --brand-muted: #2a2a2d;
+        --text-main: #f5f3ee;
+        --text-muted: #94a3b8;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--brand-bg);
+        color: var(--text-main);
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+      .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .gold-border {
+        border-color: var(--brand-gold);
+      }
+      .gold-text {
+        color: var(--brand-gold);
+      }
+      .gold-bg {
+        background-color: var(--brand-gold);
+      }
+    </style>
+
+    <!-- Theme init (antes do React renderizar) -->
+    <script>
+      (function () {
+        const saved = localStorage.getItem("theme"); // "light" | "dark" | null
+        const systemPrefersDark =
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = saved ?? (systemPrefersDark ? "dark" : "light");
+        document.documentElement.classList.toggle("dark", theme === "dark");
+      })();
+    </script>
+
+    <!-- IMPORTMAP: REMOVER no Vite -->
+    <!-- Não use importmap de react/@google/genai aqui. Vite resolve dependências. -->
+  </head>
+
+  <body class="overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

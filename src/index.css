@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Seus tokens */
+:root {
+  --brand-bg: #f5f3ee;
+  --brand-gold: #a68a45;
+  --brand-surface: #ffffff;
+  --brand-muted: #e5e5e5;
+  --text-main: #0f0f10;
+  --text-muted: #4b5563;
+}
+
+html.dark {
+  --brand-bg: #0f0f10;
+  --brand-gold: #c6a75e;
+  --brand-surface: #141417; /* ✅ deixe surface escuro no dark */
+  --brand-muted: #2a2a2d;
+  --text-main: #f5f3ee;
+  --text-muted: #94a3b8;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--brand-bg);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
