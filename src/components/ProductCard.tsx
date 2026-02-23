@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import type { Product } from '../types/types';
+import React, { useMemo } from "react";
+import type { Product } from "../types/types";
 
 interface ProductCardProps {
   product: Product;
@@ -17,7 +17,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const priceNumber = product.basePrice;
 
   const productUrl = useMemo(() => {
-    if (typeof window === 'undefined') return undefined;
+    if (typeof window === "undefined") return undefined;
     const slug = product.id || product.name;
     return `${window.location.origin}/produto/${encodeURIComponent(slug)}`;
   }, [product.id, product.name]);
@@ -26,22 +26,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const jsonLd = useMemo(() => {
     return {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
+      "@context": "https://schema.org",
+      "@type": "Product",
       name: product.name,
       image: [product.image],
       description: product.description,
       category: product.category,
       brand: {
-        '@type': 'Brand',
+        "@type": "Brand",
         name: brandName,
       },
       ...(productUrl ? { url: productUrl } : {}),
       offers: {
-        '@type': 'Offer',
-        priceCurrency: 'BRL',
+        "@type": "Offer",
+        priceCurrency: "BRL",
         price: priceNumber,
-        availability: 'https://schema.org/InStock',
+        availability: "https://schema.org/InStock",
         ...(productUrl ? { url: productUrl } : {}),
       },
     };
@@ -54,6 +54,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
     productUrl,
     priceNumber,
   ]);
+  const src = (product.image ?? "").trim();
+
+  console.log("product.imageddddddddddddddddddddd", src);
 
   return (
     <article
@@ -63,7 +66,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         overflow-hidden 
         shadow-xl dark:shadow-black/60
         transition-all duration-500 hover:-translate-y-1
-        ${isRecommended ? 'ring-2 ring-brand-gold ring-inset' : ''}`}
+        ${isRecommended ? "ring-2 ring-brand-gold ring-inset" : ""}`}
       aria-label={`Produto: ${product.name}`}
     >
       <script
@@ -74,8 +77,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* IMAGE */}
       <figure className="relative aspect-[4/5] overflow-hidden bg-slate-100 dark:bg-black transition-colors">
         <img
-          src={product.image}
+          src={src || "https://via.placeholder.com/400x400?text=NO+IMAGE"}
           alt={`${product.name} - ${brandName}`}
+          onError={(e) => {
+            console.log("IMG FAILED:", JSON.stringify(src));
+            e.currentTarget.src =
+              "https://via.placeholder.com/400x400?text=ERROR";
+          }}
           className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-1000"
           loading="lazy"
           decoding="async"
@@ -146,9 +154,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
               value={priceNumber}
               className="text-xl font-bold text-slate-900 dark:text-white"
             >
-              {priceNumber.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
+              {priceNumber.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
               })}
             </data>
 

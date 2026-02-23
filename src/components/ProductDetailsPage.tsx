@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import type { Manufacturer, Product } from "../types/types";
 
+
+
 interface ProductDetailsPageProps {
   product: Product;
   onBack: () => void;
@@ -182,7 +184,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                 </p>
 
                 <span className="bg-brand-muted text-slate-600 dark:text-slate-400 text-[9px] font-bold px-3 py-1 uppercase tracking-widest">
-                  Ready to Ship
+                  Pronto para envio
                 </span>
               </div>
             </header>
@@ -191,7 +193,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
             {hasFactories && (
               <fieldset className="mb-12">
                 <legend className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-6 italic">
-                  ENGINEERING SOURCE (FACTORY):
+                  FONTE DE ENGENHARIA (FÁBRICA):
                 </legend>
 
                 <div
@@ -228,7 +230,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                               selected ? "text-brand-gold" : "text-slate-500"
                             }`}
                           >
-                            {f.factory} FACTORY
+                            {f.factory} Fábrica
                           </span>
 
                           <span className="font-bold text-slate-900 dark:text-white text-sm">
@@ -252,7 +254,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
               className="w-full bg-brand-gold text-brand-bg py-6 font-bold uppercase tracking-[0.4em] text-[12px] hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-slate-950 transition-all shadow-xl flex items-center justify-center gap-3"
               aria-label={`Adicionar ${product.name} ao carrinho`}
             >
-              ADD TO BAG
+              Adicionar no carrinho
             </button>
           </section>
         </article>
@@ -262,11 +264,11 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
           {/* Specs */}
           <section aria-label="Especificações do produto">
             <h2 className="text-2xl font-serif font-bold text-slate-900 dark:text-white mb-10 uppercase tracking-wide">
-              Product Details
+              Detalhes do produto
             </h2>
 
             {product.specs?.general && (
-              <SpecSection title="General" items={product.specs.general} />
+              <SpecSection title="Geral" items={product.specs.general} />
             )}
             {product.specs?.case && (
               <SpecSection title="Case" items={product.specs.case} />
@@ -278,7 +280,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
               <SpecSection title="Dial" items={product.specs.dial} />
             )}
             {product.specs?.movement && (
-              <SpecSection title="Movement" items={product.specs.movement} />
+              <SpecSection title="Movimento" items={product.specs.movement} />
             )}
 
             {!product.specs && (
@@ -295,9 +297,9 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
           >
             <h2
               id={descId}
-              className="text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-[0.25em] mb-6"
+              className="text-[11px] font-bold text-slate-900 dark:text-white uppercase tracking-[0.25em] mb-6 "
             >
-              DESCRIPTION
+              DESCRIÇÃO
             </h2>
 
             <div
@@ -341,7 +343,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                   aria-hidden="true"
                 />
                 <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest leading-tight">
-                  Authentic Packaging Included
+                  Embalagem autêntica incluída
                 </p>
               </div>
 
@@ -351,7 +353,7 @@ const ProductDetailsPage: React.FC<ProductDetailsPageProps> = ({
                   aria-hidden="true"
                 />
                 <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest leading-tight">
-                  Global Express Delivery
+                  Entrega Expressa Global
                 </p>
               </div>
             </section>

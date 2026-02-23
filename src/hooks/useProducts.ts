@@ -15,6 +15,7 @@ export function useProducts() {
         setLoading(true);
 
         const data = await fetchProducts();
+        
         console.log("🔥 PRODUTOS DO SUPABASE:", data);
 
         if (mounted) {
