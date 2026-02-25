@@ -1,73 +1,78 @@
-# React + TypeScript + Vite
+# 🏗️ Arquitetura de Sistema: E-Commerce High-End
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Documentação técnica do fluxo de venda, estoque e pagamento. Sistema desenhado para suportar tráfego pago escalável com segurança total contra fraudes de preço e estoque.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Stack Tecnológica
+* **Front-end:** Vercel (Next.js/React)
+* **Backend:** Koyeb (NestJS)
+* **Banco de Dados/Storage:** Supabase
+* **Infra:** Koyeb (Auto-scaling API)
 
-## React Compiler
+---
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## 📐 Responsabilidades por Camada
 
-## Expanding the ESLint configuration
+### 1. Front-end (Vercel)
+* **Função:** Catálogo, PDP, Carrinho e Interface de Checkout.
+* **Segurança:** * **PROIBIDO** o uso da `SUPABASE_SERVICE_ROLE_KEY`.
+    * Leitura de produtos via Supabase Client (respeitando RLS).
+    * Toda ação de escrita ou pagamento é delegada para o Backend no Koyeb.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 2. Backend (Koyeb / NestJS)
+* **Função:** Único orquestrador de lógica de negócio.
+* **Segurança:** * Detentor exclusivo da `SUPABASE_SERVICE_ROLE_KEY`.
+    * Responsável por assinar/validar requisições do agente.
+    * Valida assinaturas de Webhooks de pagamento.
+* **Ações:** Criação de pedidos, reserva de estoque e geração de cobrança Pix.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 3. Supabase (Database & Storage)
+* **Tabelas:** `products`, `stock`, `orders`, `order_items`, `payments`, `customers`.
+* **Storage:** Bucket para mídia de alta fidelidade (fotos/vídeos dos clones).
+* **RLS (Row Level Security):**
+    * **Público:** Acesso de leitura (Select) permitido.
+    * **Backend:** Escrita permitida apenas via `service_role` (Server-to-Server).
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 💳 Fluxo de Compra (Checkout Confiável)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+O pagamento só muda de status via **Webhook**, eliminando brechas de segurança no cliente.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 1. Solicitação de Checkout
+* **Front-end** ➔ `POST /checkout` (Koyeb)
+    * Payload: Itens do carrinho + Dados do cliente (Nome, WhatsApp, Endereço).
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 2. Processamento (NestJS)
+* **Validação:** Verifica preços e SKUs diretamente no DB.
+* **Persistência:** Cria a `order` e os `order_items`.
+* **Reserva:** Diminui o estoque disponível com **TTL (Time-To-Live)** de 20–30 min.
+* **Pagamento:** Cria cobrança Pix no provedor e grava `payment` com `status=waiting`.
+* **Resposta:** Retorna para o front `{ qr_code, copia_e_cola, expires_at, order_id }`.
+
+### 3. Finalização
+* **Front-end:** Exibe o QR Code, botão "Copia e Cola" e o timer de contagem regressiva.
+
+---
+
+## 📡 Conciliação Automática (Webhooks)
+
+Para evitar "gambiarra" e garantir que o pedido só seja processado após o dinheiro cair:
+
+1. **Webhook Provedor** ➔ `POST /webhooks/pix` (Koyeb)
+2. **Backend:** Valida a assinatura do webhook para garantir que veio do banco.
+3. **Backend:** Marca `payment=paid` e `order=paid`.
+4. **Backend:** Confirma a baixa de estoque (converte reserva temporária em baixa definitiva).
+5. **(Opcional) Front-end:** Realiza polling em `GET /orders/:id/status` para exibir tela de sucesso.
+
+---
+
+## 📊 Estrutura de Tabelas
+
+* **products:** Cadastro de modelos (Rolex, AP, Patek).
+* **stock:** Saldo real e saldo reservado.
+* **orders:** Cabeçalho do pedido (status, total, cliente).
+* **order_items:** Snapshot de preço e quantidade no momento da compra.
+* **payments:** Registro da transação Pix e log do provedor.
+* **customers:** Dados de contato e endereço.
